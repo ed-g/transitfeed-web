@@ -2,6 +2,6 @@
 GTFS transitfeed and FeedValidator web service
 
 Install:
- * ./setup.py build
- * pip install .
- * transitfeed_web
+ * `./setup.py build`
+ * `pip install .`
+ * `transitfeed_web`
