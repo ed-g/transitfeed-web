@@ -11,20 +11,20 @@ from flask import Flask
 
 import util # Actually, transitfeed_web.util
 
-def find_and_load_feedvalidator():
+def find_and_import_feedvalidator_script():
     # The transitfeed library installs feedvalidator.py in bin/ and its features
     # are not available as a library. So we gotta get creative to import it.
-    # find which directory our transitfeed.py file is 
+    # Find in which directory is our transitfeed.py file.
     feedvalidator_file = util.search_path('feedvalidator.py')
     feedvalidator_dir  = os.path.dirname(feedvalidator_file)
     #print ("feedvalidator_file: %s" % feedvalidator_file)
     #print ("feedvalidator_dir: %s" %  feedvalidator_dir)
 
-    # and add that sucker to our PYTHONPATH
+    # And add that sucker to our PYTHONPATH.
     sys.path.append(feedvalidator_dir)
     import feedvalidator
 
-find_and_load_feedvalidator()
+find_and_import_feedvalidator_script()
 
 app = Flask(__name__)
 
