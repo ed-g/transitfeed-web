@@ -3,6 +3,7 @@
 import sys
 import transitfeed
 import run_transitfeed_web_server
+import util
 
 def main():
     print ("Hello, world.")

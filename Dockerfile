@@ -15,6 +15,7 @@ RUN mkdir /home/tfeedweb/transitfeed_web/
 COPY Dockerfile /home/tfeedweb/transitfeed_web/
 COPY LICENSE /home/tfeedweb/transitfeed_web/
 COPY transitfeed_web /home/tfeedweb/transitfeed_web/transitfeed_web
+COPY copy_of_transitfeed /home/tfeedweb/transitfeed_web/copy_of_transitfeed
 COPY *.md /home/tfeedweb/transitfeed_web/
 COPY *.py  /home/tfeedweb/transitfeed_web/
 RUN chown -R tfeedweb:tfeedweb /home/tfeedweb

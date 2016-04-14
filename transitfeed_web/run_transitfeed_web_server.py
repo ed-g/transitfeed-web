@@ -4,11 +4,27 @@ import sys
 import os
 import transitfeed
 import time # for testing
-import cStringIO #write GTFS directly to network.
+import StringIO #write GTFS directly to network.
 import hexdump 
 import requests
-
 from flask import Flask
+
+import util # Actually, transitfeed_web.util
+
+def find_and_load_feedvalidator():
+    # The transitfeed library installs feedvalidator.py in bin/ and its features
+    # are not available as a library. So we gotta get creative to import it.
+    # find which directory our transitfeed.py file is 
+    feedvalidator_file = util.search_path('feedvalidator.py')
+    feedvalidator_dir  = os.path.dirname(feedvalidator_file)
+    #print ("feedvalidator_file: %s" % feedvalidator_file)
+    #print ("feedvalidator_dir: %s" %  feedvalidator_dir)
+
+    # and add that sucker to our PYTHONPATH
+    sys.path.append(feedvalidator_dir)
+    import feedvalidator
+
+find_and_load_feedvalidator()
 
 app = Flask(__name__)
 
@@ -17,8 +33,15 @@ testing_gtfs_url = 'http://oregon-gtfs.com/gtfs_data/tillamook-or-us/tillamook-o
 @app.route("/validate-demo")
 def validate_demo():
     r = requests.get(testing_gtfs_url)
-    return ("length of gtfs file is: %s" % len(r.content))
-    # binary content in r.content 
+    #return ("length of gtfs file is: %s" % len(r.content))
+
+    gtfs_file = StringIO.StringIO()
+    gtfs_file.write(r.content) # binary content in r.content 
+    gtfs_file.seek(0) #rewind.
+
+       
+
+
 
 @app.route("/test-gtfs.zip")
 def test_gtfs_output():
@@ -26,7 +49,7 @@ def test_gtfs_output():
     schedule.AddAgency("Fly Agency", "http://iflyagency.com",
                        "America/Los_Angeles")
 
-    gtfs_stringio = cStringIO.StringIO()
+    gtfs_stringio = StringIO.StringIO()
     schedule.WriteGoogleTransitFeed(gtfs_stringio)
     return gtfs_stringio.getvalue()
 
