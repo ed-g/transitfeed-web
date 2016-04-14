@@ -2,12 +2,12 @@
 from setuptools import setup, find_packages
 setup(
     name = "transitfeed_web",
-    version = "0.03",
+    version = "0.04",
     packages = find_packages(),
     # packages = ['transitfeed_web'],
 
     # setup_requires = ['transitfeed', 'flask'],
-    install_requires = ['transitfeed', 'flask', 'hexdump'],
+    install_requires = ['transitfeed', 'flask', 'hexdump', 'requests'],
 
     entry_points = {
         'console_scripts': 

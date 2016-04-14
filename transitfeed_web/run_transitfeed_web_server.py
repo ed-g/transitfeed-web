@@ -6,10 +6,19 @@ import transitfeed
 import time # for testing
 import cStringIO #write GTFS directly to network.
 import hexdump 
+import requests
 
 from flask import Flask
 
 app = Flask(__name__)
+
+testing_gtfs_url = 'http://oregon-gtfs.com/gtfs_data/tillamook-or-us/tillamook-or-us.zip'
+
+@app.route("/validate-demo")
+def validate_demo():
+    r = requests.get(testing_gtfs_url)
+    return ("length of gtfs file is: %s" % len(r.content))
+    # binary content in r.content 
 
 @app.route("/test-gtfs.zip")
 def test_gtfs_output():
