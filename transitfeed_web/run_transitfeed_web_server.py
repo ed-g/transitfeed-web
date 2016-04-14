@@ -1,12 +1,35 @@
 #!/usr/bin/env python2
 
 import sys
+import os
 import transitfeed
 import time # for testing
 import cStringIO #write GTFS directly to network.
-from hexdump import hexdump
+import hexdump 
+
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route("/test-gtfs.zip")
+def test_gtfs_output():
+    schedule = transitfeed.Schedule()
+    schedule.AddAgency("Fly Agency", "http://iflyagency.com",
+                       "America/Los_Angeles")
+
+    gtfs_stringio = cStringIO.StringIO()
+    schedule.WriteGoogleTransitFeed(gtfs_stringio)
+    return gtfs_stringio.getvalue()
+
+@app.route("/")
+def hello():
+    return "Hello, from transitfeed_web server!"
+
 
 def main():
+    app.run(host='0.0.0.0', port=5000)
+
+def loop_and_print_stuff_for_docker_testing():
     schedule = transitfeed.Schedule()
     schedule.AddAgency("Fly Agency", "http://iflyagency.com",
                        "America/Los_Angeles")
@@ -19,8 +42,9 @@ def main():
     while True:
         time.sleep(3)
         print("Hello, from transitfeed_web server.")
+        print("Running as user: %s group: %s" % ( os.getuid(), os.getgid()))
         print("Hexdump of GTFS.")
-        hexdump(gtfs_stringio.getvalue())
+        print(hexdump.hexdump(gtfs_stringio.getvalue(), 'return'))
 
 if __name__ == '__main__':
     main()

@@ -4,6 +4,7 @@ setup(
     name = "transitfeed_web",
     version = "0.03",
     packages = find_packages(),
+    # packages = ['transitfeed_web'],
 
     # setup_requires = ['transitfeed', 'flask'],
     install_requires = ['transitfeed', 'flask', 'hexdump'],
@@ -18,5 +19,5 @@ setup(
     description = "GTFS transitfeed and FeedValidator web service",
     license = "Apache 2.0",
     keywords = "gtfs transit",
-    url = "http://github.com/ed-g/transitfeed-web",
+    url = "http://github.com/ed-g/transitfeed_web",
 )
