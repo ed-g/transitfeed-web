@@ -11,7 +11,7 @@ from flask import Flask
 
 import util # Actually, transitfeed_web.util
 
-def find_and_import_feedvalidator_script():
+def find_feedvalidator_script_and_add_to_pythonpath():
     # The transitfeed library installs feedvalidator.py in bin/ and its features
     # are not available as a library. So we gotta get creative to import it.
     # Find in which directory is our transitfeed.py file.
@@ -22,13 +22,27 @@ def find_and_import_feedvalidator_script():
 
     # And add that sucker to our PYTHONPATH.
     sys.path.append(feedvalidator_dir)
-    import feedvalidator
 
-find_and_import_feedvalidator_script()
+find_feedvalidator_script_and_add_to_pythonpath()
+import feedvalidator
 
 app = Flask(__name__)
 
 testing_gtfs_url = 'http://oregon-gtfs.com/gtfs_data/tillamook-or-us/tillamook-or-us.zip'
+
+class FakeOptions:
+    def __init__(options):
+        # options = {} #How can we create empty Python object??
+        options.manual_entry=True
+        # options.output='validation-results.html',
+        options.memory_db=False
+        options.check_duplicate_trips=False,
+        options.limit_per_type=5
+        # options.latest_version='1.2.1',
+        options.latest_version=None, ## FIXME. this is causing problems.
+        options.service_gap_interval=13
+        options.error_types_ignore_list = ""
+
 
 @app.route("/validate-demo")
 def validate_demo():
@@ -39,8 +53,13 @@ def validate_demo():
     gtfs_file.write(r.content) # binary content in r.content 
     gtfs_file.seek(0) #rewind.
 
-       
+    options = FakeOptions()
 
+    output_file = StringIO.StringIO()
+
+    feedvalidator.RunValidationOutputToFile(gtfs_file,options,output_file)
+
+    return output_file.getvalue()
 
 
 @app.route("/test-gtfs.zip")
@@ -59,7 +78,7 @@ def hello():
 
 
 def main():
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)
 
 def loop_and_print_stuff_for_docker_testing():
     schedule = transitfeed.Schedule()
