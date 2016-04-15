@@ -25,3 +25,9 @@ Format for `transitfeed_web_config.json` config file, put this on your web serve
     ]
 }
 ```
+
+There's an regular-expression based allow-list `regexp_allowlist`, which only
+allows download and validation for feeds specified in the config file, in order
+to help prevent this tool from being used to hack into third party sites as a
+web proxy, and to limit possible security exposure from malicious GTFS files. 
+
