@@ -11,3 +11,17 @@ Install:
 Docker:
  * `docker build -t transitfeed-web .`
  * `docker run -e TRANSITFEED_WEB_CONFIG_URL=https://host:port/path/transitfeed_web_config.json -d -p 5000:5000 transitfeed-web`
+
+Config file (format subject to change):
+
+```json
+{ 
+    "comment" : "This is a configuration file for https://github.com/ed-g/transitfeed_web"
+    , "regexp_allowlist" : [
+        "https://developers.google.com/transit/gtfs/examples/sample-feed.zip"
+        , "https?://data.trilliumtransit.com/[-a-zA-Z_/]+.zip"
+        , "https?://www.oregon-gtfs.com/[-a-zA-Z_/]+.zip"
+        , "https?://oregon-gtfs.com/[-a-zA-Z_/]+.zip"
+    ]
+}
+```
