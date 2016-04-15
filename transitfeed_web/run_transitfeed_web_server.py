@@ -7,7 +7,9 @@ import time # for testing
 import StringIO #write GTFS directly to network.
 import hexdump 
 import requests
-from flask import Flask
+from flask import Flask, request, url_for
+import re
+import json
 
 import util # Actually, transitfeed_web.util
 
@@ -26,43 +28,65 @@ def find_feedvalidator_script_and_add_to_pythonpath():
 find_feedvalidator_script_and_add_to_pythonpath()
 import feedvalidator
 
+def fetch_config_json():
+    config_url = os.environ.get('TRANSITFEED_WEB_CONFIG_URL')
+    if config_url:
+        print ("Fetching config json from  %s" % config_url)
+        r = requests.get(config_url)
+        config = r.json()
+    else:
+        config = json.loads("""{
+                "comment": "This is a configuration file for https://github.com/ed-g/feedvalidator_web",
+                "regexp_allowlist": [
+                    "https://developers.google.com/transit/gtfs/examples/sample-feed.zip" ] } """)
+    print ("Config json: %s" % config)
+    return config
+
+def url_allowed(config, url):
+    allowlist = config['regexp_allowlist']
+    print ("allowlist is: %s" % allowlist)
+    for a in allowlist:
+        if re.match(a, url):
+            return True
+    return False
+
+CONFIG = fetch_config_json()
+
+
 app = Flask(__name__)
 
-testing_gtfs_url = 'http://oregon-gtfs.com/gtfs_data/tillamook-or-us/tillamook-or-us.zip'
+# server white list -- oregon-gtfs.com data.trilliumtransit.com
+# testing_gtfs_url = 'http://oregon-gtfs.com/gtfs_data/tillamook-or-us/tillamook-or-us.zip'
+testing_gtfs_url = 'https://developers.google.com/transit/gtfs/examples/sample-feed.zip'
 
-class FakeOptions:
-    def __init__(options):
-        # options = {} #How can we create empty Python object??
-        options.manual_entry=True
-        # options.output='validation-results.html',
-        options.memory_db=False
-        options.check_duplicate_trips=False,
-        options.limit_per_type=5
-        # options.latest_version='1.2.1',
-        options.latest_version=None, ## FIXME. this is causing problems.
-        options.service_gap_interval=13
-        options.error_types_ignore_list = ""
+@app.route("/transitfeed_web/validate", methods = ['GET','POST'])
+def validate_gtfs_from_url():
+    gtfs_url = request.form.get("gtfs_url") or request.args.get("gtfs_url") or testing_gtfs_url
 
+    if not url_allowed(CONFIG, gtfs_url):
+        return ("Sorry, URL %s is not on our allow-list." % gtfs_url)
 
-@app.route("/validate-demo")
-def validate_demo():
-    r = requests.get(testing_gtfs_url)
+    r = requests.get(gtfs_url)
     #return ("length of gtfs file is: %s" % len(r.content))
 
     gtfs_file = StringIO.StringIO()
     gtfs_file.write(r.content) # binary content in r.content 
     gtfs_file.seek(0) #rewind.
 
-    options = FakeOptions()
+    # Pretend to pass command-line arguments to feedvalidator. It returns an
+    # "options" object which is used to configure to the validation function.
+    save_argv = sys.argv  # save actual argv
+    sys.argv = ['fakeout-argv-for-feedparser.py', 'fake-placeholder-gtfs-file.zip']
+    options = feedvalidator.ParseCommandLineArguments()[1]
+    sys.argv = save_argv  # restore argv
 
     output_file = StringIO.StringIO()
-
     feedvalidator.RunValidationOutputToFile(gtfs_file,options,output_file)
 
     return output_file.getvalue()
 
 
-@app.route("/test-gtfs.zip")
+@app.route("/transitfeed_web/test-gtfs.zip")
 def test_gtfs_output():
     schedule = transitfeed.Schedule()
     schedule.AddAgency("Fly Agency", "http://iflyagency.com",
@@ -73,12 +97,26 @@ def test_gtfs_output():
     return gtfs_stringio.getvalue()
 
 @app.route("/")
-def hello():
-    return "Hello, from transitfeed_web server!"
+@app.route("/transitfeed_web/")
+def index():
+    html = """
+<html><head><title>transitfeed_web validation service</title></head>
+<body>
+<form method="post" action="%s" >
+  <label for="gtfs_url">GTFS feed URL:</label>
+  <input id="gtfs_url" name="gtfs_url" type="text" size="80">
+  <input type="submit" value="Validate">
+</form>
+</body></html>
+    """ % url_for('validate_gtfs_from_url')
+
+    return html
 
 
 def main():
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # Never use debug=True in production, it's completely insecure.
+    # app.run(host='0.0.0.0', port=5000, debug=True) ## 
+    app.run(host='0.0.0.0', port=5000)
 
 def loop_and_print_stuff_for_docker_testing():
     schedule = transitfeed.Schedule()

@@ -2,6 +2,10 @@ FROM centos
 MAINTAINER Ed Groth <info@groth-geodata.com>
 RUN yum -y install epel-release
 RUN yum -y update 
+
+# for building SSL libraries
+RUN yum -y install gcc libffi libffi-devel openssl-devel python-devel python-cffi
+
 RUN yum -y install python-pip
 RUN pip install --upgrade pip
 
@@ -15,7 +19,7 @@ RUN mkdir /home/tfeedweb/transitfeed_web/
 COPY Dockerfile /home/tfeedweb/transitfeed_web/
 COPY LICENSE /home/tfeedweb/transitfeed_web/
 COPY transitfeed_web /home/tfeedweb/transitfeed_web/transitfeed_web
-COPY copy_of_transitfeed /home/tfeedweb/transitfeed_web/copy_of_transitfeed
+# COPY copy_of_transitfeed /home/tfeedweb/transitfeed_web/copy_of_transitfeed
 COPY *.md /home/tfeedweb/transitfeed_web/
 COPY *.py  /home/tfeedweb/transitfeed_web/
 RUN chown -R tfeedweb:tfeedweb /home/tfeedweb

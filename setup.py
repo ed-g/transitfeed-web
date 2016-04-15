@@ -2,12 +2,13 @@
 from setuptools import setup, find_packages
 setup(
     name = "transitfeed_web",
-    version = "0.05",
+    version = "0.06",
     packages = find_packages(),
     # packages = ['transitfeed_web'],
 
-    # setup_requires = ['transitfeed', 'flask'],
-    install_requires = ['transitfeed', 'flask', 'hexdump', 'requests'],
+    # setup_requires = [],
+    install_requires = ['transitfeed', 'flask', 'hexdump', 'requests'
+                      , 'ndg-httpsclient', 'pytz'],
 
     entry_points = {
         'console_scripts': 
