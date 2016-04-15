@@ -7,7 +7,7 @@ setup(
     # packages = ['transitfeed_web'],
 
     # setup_requires = [],
-    install_requires = ['transitfeed', 'flask', 'hexdump', 'requests'
+    install_requires = ['transitfeed', 'flask', 'requests'
                       , 'ndg-httpsclient', 'pytz'],
 
     entry_points = {
