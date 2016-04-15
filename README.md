@@ -12,7 +12,7 @@ Docker:
  * `docker build -t transitfeed-web .`
  * `docker run -e TRANSITFEED_WEB_CONFIG_URL=https://host:port/path/transitfeed_web_config.json -d -p 5000:5000 transitfeed-web`
 
-Config file (format subject to change):
+Format for `transitfeed_web_config.json` config file:
 
 ```json
 { 

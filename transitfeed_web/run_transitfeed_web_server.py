@@ -36,7 +36,7 @@ def fetch_config_json():
         config = r.json()
     else:
         config = json.loads("""{
-                "comment": "This is a configuration file for https://github.com/ed-g/feedvalidator_web",
+                "comment": "This is a configuration file for https://github.com/ed-g/transitfeed_web",
                 "regexp_allowlist": [
                     "https://developers.google.com/transit/gtfs/examples/sample-feed.zip" ] } """)
     print ("Config json: %s" % config)
