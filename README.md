@@ -1,4 +1,4 @@
-# transitfeed-web
+# transitfeed_web
 GTFS transitfeed and FeedValidator web service
 
 Install:
