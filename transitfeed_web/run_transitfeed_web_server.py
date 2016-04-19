@@ -63,7 +63,12 @@ def validate_gtfs_from_url():
     gtfs_url = request.form.get("gtfs_url") or request.args.get("gtfs_url") or testing_gtfs_url
 
     if not url_allowed(CONFIG, gtfs_url):
+        # app.logger.warning("validate_gtfs_from_url: Sorry, URL %s is not on our allow-list.", gtfs_url)
+        print("validate_gtfs_from_url: Sorry, URL %s is not on our allow-list." % gtfs_url)
         return ("Sorry, URL %s is not on our allow-list." % gtfs_url)
+
+    #app.logger.warning("validate_gtfs_from_url: fetching URL %s", gtfs_url)
+    print("validate_gtfs_from_url: fetching URL %s" % gtfs_url)
 
     r = requests.get(gtfs_url)
     #return ("length of gtfs file is: %s" % len(r.content))
