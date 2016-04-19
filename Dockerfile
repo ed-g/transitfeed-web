@@ -9,6 +9,13 @@ RUN yum -y install gcc libffi libffi-devel openssl-devel python-devel python-cff
 RUN yum -y install python-pip
 RUN pip install --upgrade pip
 
+# workaround https://github.com/google/transitfeed/issues/393 
+RUN pip install transitfeed==1.2.15-blah 
+
+# I hope that when transitfeed 1.2.16 is released, the newer version will be
+# installed by this command.
+RUN pip install --upgrade transitfeed
+
 # Pick an user/group id which is unlikely to be used by the host system, to
 # slightly enhance security.
 RUN groupadd -g 10001 tfeedweb
