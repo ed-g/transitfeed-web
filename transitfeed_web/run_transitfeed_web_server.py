@@ -76,23 +76,28 @@ testing_gtfs_url = 'https://developers.google.com/transit/gtfs/examples/sample-f
 
 @app.route("/transitfeed_web/validate", methods = ['GET','POST'])
 def validate_gtfs_from_url():
-    gtfs_url = request.form.get("gtfs_url") or request.args.get("gtfs_url") or testing_gtfs_url
 
-    if not url_allowed(CONFIG, gtfs_url):
-        # app.logger.warning("validate_gtfs_from_url: Sorry, URL %s is not on our allow-list.", gtfs_url)
-        print("validate_gtfs_from_url: Sorry, URL %s is not on our allow-list." % gtfs_url, file=sys.stderr)
-        return ("Sorry, URL %s is not on our allow-list." % gtfs_url)
+    if request.files['gtfs_file_upload']:
+        print("validate_gtfs_from_url: user uploaded a file using POST.", file=sys.stderr)
+        gtfs_file = request.files['gtfs_file_upload']
+    else:
+        gtfs_url = request.form.get("gtfs_url") or request.args.get("gtfs_url") or testing_gtfs_url
 
-    #app.logger.warning("validate_gtfs_from_url: fetching URL %s", gtfs_url)
-    print("validate_gtfs_from_url: fetching URL %s" % gtfs_url, file=sys.stderr)
+        if not url_allowed(CONFIG, gtfs_url):
+            # app.logger.warning("validate_gtfs_from_url: Sorry, URL %s is not on our allow-list.", gtfs_url)
+            print("validate_gtfs_from_url: Sorry, URL %s is not on our allow-list." % gtfs_url, file=sys.stderr)
+            return ("Sorry, URL %s is not on our allow-list." % gtfs_url)
 
-    s = requests.Session() # This is actually monkeypatched requests_ftp Session.
-    r = s.get(gtfs_url)
-    #return ("length of gtfs file is: %s" % len(r.content))
+        #app.logger.warning("validate_gtfs_from_url: fetching URL %s", gtfs_url)
+        print("validate_gtfs_from_url: fetching URL %s" % gtfs_url, file=sys.stderr)
 
-    gtfs_file = StringIO.StringIO()
-    gtfs_file.write(r.content) # binary content in r.content 
-    gtfs_file.seek(0) #rewind.
+        s = requests.Session() # This is actually monkeypatched requests_ftp Session.
+        r = s.get(gtfs_url)
+        #return ("length of gtfs file is: %s" % len(r.content))
+
+        gtfs_file = StringIO.StringIO()
+        gtfs_file.write(r.content) # binary content in r.content 
+        gtfs_file.seek(0) #rewind.
 
     # Pretend to pass command-line arguments to feedvalidator. It returns an
     # "options" object which is used to configure to the validation function.
@@ -123,10 +128,18 @@ def index():
     html = """
 <html><head><title>transitfeed_web validation service</title></head>
 <body>
-<form method="post" action="%s" >
-  <label for="gtfs_url">GTFS feed URL:</label>
+<form method="post" enctype="multipart/form-data"  action="%s" >
+  <p>
+  <label for="gtfs_url">Please enter a GTFS feed URL:</label>
   <input id="gtfs_url" name="gtfs_url" type="text" size="80">
+
+  <p>
+  <label for="gtfs_file_upload">Or upload a GTFS file:</label>
+  <input id="gtfs_file_upload" name="gtfs_file_upload" type="file">
+
+  <p>
   <input type="submit" value="Validate">
+
 </form>
 </body></html>
     """ % url_for('validate_gtfs_from_url')
