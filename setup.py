@@ -2,12 +2,12 @@
 from setuptools import setup, find_packages
 setup(
     name = "transitfeed_web",
-    version = "0.06",
+    version = "0.07",
     packages = find_packages(),
     # packages = ['transitfeed_web'],
 
     # setup_requires = [],
-    install_requires = ['transitfeed', 'flask', 'requests'
+    install_requires = ['transitfeed', 'flask', 'requests', 'requests-ftp'
                       , 'ndg-httpsclient', 'pytz'],
 
     entry_points = {

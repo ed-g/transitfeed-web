@@ -7,6 +7,20 @@ import transitfeed
 import time # for testing
 import StringIO #write GTFS directly to network.
 import requests
+
+# https://github.com/Lukasa/requests-ftp
+#
+# Requests-FTP is an implementation of a very stupid FTP transport adapter for
+# use with the awesome Requests Python library.
+# 
+# This library is not intended to be an example of Transport Adapters best
+# practices. This library was cowboyed together in about 4 hours of total work,
+# has no tests, and relies on a few ugly hacks. Instead, it is intended as both
+# a starting point for future development and a useful example for how to
+# implement transport adapters.
+import requests_ftp
+requests_ftp.monkeypatch_session()
+
 from flask import Flask, request, url_for
 import re
 import json
@@ -32,7 +46,8 @@ def fetch_config_json():
     config_url = os.environ.get('TRANSITFEED_WEB_CONFIG_URL')
     if config_url:
         print ("Fetching config json from  %s" % config_url)
-        r = requests.get(config_url)
+        s = requests.Session() # This is actually monkeypatched requests_ftp Session.
+        r = s.get(config_url)
         config = r.json()
     else:
         config = json.loads("""{
@@ -71,7 +86,8 @@ def validate_gtfs_from_url():
     #app.logger.warning("validate_gtfs_from_url: fetching URL %s", gtfs_url)
     print("validate_gtfs_from_url: fetching URL %s" % gtfs_url, file=sys.stderr)
 
-    r = requests.get(gtfs_url)
+    s = requests.Session() # This is actually monkeypatched requests_ftp Session.
+    r = s.get(gtfs_url)
     #return ("length of gtfs file is: %s" % len(r.content))
 
     gtfs_file = StringIO.StringIO()
