@@ -76,10 +76,10 @@ testing_gtfs_url = 'https://developers.google.com/transit/gtfs/examples/sample-f
 
 @app.route("/transitfeed_web/validate", methods = ['GET','POST'])
 def validate_gtfs_from_url():
-
-    if request.files['gtfs_file_upload']:
+    if request.method == 'POST' and request.files['gtfs_file_upload']:
         print("validate_gtfs_from_url: user uploaded a file using POST.", file=sys.stderr)
         gtfs_file = request.files['gtfs_file_upload']
+
     else:
         gtfs_url = request.form.get("gtfs_url") or request.args.get("gtfs_url") or testing_gtfs_url
 
