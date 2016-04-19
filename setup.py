@@ -2,8 +2,10 @@
 from setuptools import setup, find_packages
 setup(
     name = "transitfeed_web",
-    version = "0.07",
+    version = "0.09",
     packages = find_packages(),
+    package_dir = {'': '.'},
+    include_package_data = True,
     # packages = ['transitfeed_web'],
 
     # setup_requires = [],

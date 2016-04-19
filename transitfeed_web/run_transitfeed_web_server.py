@@ -7,6 +7,8 @@ import transitfeed
 import time # for testing
 import StringIO #write GTFS directly to network.
 import requests
+from jinja2 import Template, PackageLoader
+
 
 # https://github.com/Lukasa/requests-ftp
 #
@@ -70,6 +72,9 @@ CONFIG = fetch_config_json()
 
 app = Flask(__name__)
 
+# try and load templates from an egg.
+#app.jinja_loader = PackageLoader('transitfeed_web', 'templates')
+
 # server white list -- oregon-gtfs.com data.trilliumtransit.com
 # testing_gtfs_url = 'http://oregon-gtfs.com/gtfs_data/tillamook-or-us/tillamook-or-us.zip'
 testing_gtfs_url = 'https://developers.google.com/transit/gtfs/examples/sample-feed.zip'
@@ -124,11 +129,32 @@ def test_gtfs_output():
 @app.route("/")
 @app.route("/transitfeed_web/")
 def index():
-    return render_template('index.html')
+    return render_template("index.html") 
+    # TODO: how can a Flask application find templates when its installed as an egg?
+    t = Template("""
+<html>
+<head><title>transitfeed_web validation service</title></head>
+<body>
+<form method="post" enctype="multipart/form-data"  action="{{ url_for('validate_gtfs_from_url') }}" >
+  <p>
+  <label for="gtfs_url">Please enter a GTFS feed URL:</label>
+  <input id="gtfs_url" name="gtfs_url" type="text" size="80">
+
+  <p>
+  <label for="gtfs_file_upload">Or upload a GTFS file:</label>
+  <input id="gtfs_file_upload" name="gtfs_file_upload" type="file">
+
+  <p>
+  <input type="submit" value="Validate">
+
+</form>
+</body></html>""")
+    return t.render(url_for=url_for)
+
 
 def main():
     # Never use debug=True in production, it's completely insecure.
-    # app.run(host='0.0.0.0', port=5000, debug=True) ## 
+    # app.run(host='0.0.0.0', port=5000, debug=True)
     app.run(host='0.0.0.0', port=5000)
 
 if __name__ == '__main__':
