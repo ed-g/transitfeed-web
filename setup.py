@@ -4,9 +4,7 @@ setup(
     name = "transitfeed_web",
     version = "0.09",
     packages = find_packages(),
-    package_dir = {'': '.'},
     include_package_data = True,
-    # packages = ['transitfeed_web'],
 
     # setup_requires = [],
     install_requires = ['transitfeed', 'flask', 'requests', 'requests-ftp'
