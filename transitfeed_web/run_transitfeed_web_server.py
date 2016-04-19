@@ -21,7 +21,7 @@ import requests
 import requests_ftp
 requests_ftp.monkeypatch_session()
 
-from flask import Flask, request, url_for
+from flask import Flask, request, url_for, render_template
 import re
 import json
 
@@ -93,7 +93,6 @@ def validate_gtfs_from_url():
 
         s = requests.Session() # This is actually monkeypatched requests_ftp Session.
         r = s.get(gtfs_url)
-        #return ("length of gtfs file is: %s" % len(r.content))
 
         gtfs_file = StringIO.StringIO()
         gtfs_file.write(r.content) # binary content in r.content 
@@ -125,27 +124,7 @@ def test_gtfs_output():
 @app.route("/")
 @app.route("/transitfeed_web/")
 def index():
-    html = """
-<html><head><title>transitfeed_web validation service</title></head>
-<body>
-<form method="post" enctype="multipart/form-data"  action="%s" >
-  <p>
-  <label for="gtfs_url">Please enter a GTFS feed URL:</label>
-  <input id="gtfs_url" name="gtfs_url" type="text" size="80">
-
-  <p>
-  <label for="gtfs_file_upload">Or upload a GTFS file:</label>
-  <input id="gtfs_file_upload" name="gtfs_file_upload" type="file">
-
-  <p>
-  <input type="submit" value="Validate">
-
-</form>
-</body></html>
-    """ % url_for('validate_gtfs_from_url')
-
-    return html
-
+    return render_template('index.html')
 
 def main():
     # Never use debug=True in production, it's completely insecure.
