@@ -1,5 +1,6 @@
 #!/usr/bin/env python2
 
+from __future__ import print_function
 import sys
 import os
 import transitfeed
@@ -64,11 +65,11 @@ def validate_gtfs_from_url():
 
     if not url_allowed(CONFIG, gtfs_url):
         # app.logger.warning("validate_gtfs_from_url: Sorry, URL %s is not on our allow-list.", gtfs_url)
-        print("validate_gtfs_from_url: Sorry, URL %s is not on our allow-list." % gtfs_url)
+        print("validate_gtfs_from_url: Sorry, URL %s is not on our allow-list." % gtfs_url, file=sys.stderr)
         return ("Sorry, URL %s is not on our allow-list." % gtfs_url)
 
     #app.logger.warning("validate_gtfs_from_url: fetching URL %s", gtfs_url)
-    print("validate_gtfs_from_url: fetching URL %s" % gtfs_url)
+    print("validate_gtfs_from_url: fetching URL %s" % gtfs_url, file=sys.stderr)
 
     r = requests.get(gtfs_url)
     #return ("length of gtfs file is: %s" % len(r.content))
