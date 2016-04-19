@@ -23,6 +23,7 @@ RUN useradd  -u 10001 -g tfeedweb tfeedweb
 
 RUN mkdir /home/tfeedweb/transitfeed_web/
 
+COPY MANIFEST.in /home/tfeedweb/transitfeed_web/
 COPY Dockerfile /home/tfeedweb/transitfeed_web/
 COPY LICENSE /home/tfeedweb/transitfeed_web/
 COPY transitfeed_web /home/tfeedweb/transitfeed_web/transitfeed_web

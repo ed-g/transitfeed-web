@@ -130,6 +130,7 @@ def test_gtfs_output():
 @app.route("/transitfeed_web/")
 def index():
     return render_template("index.html") 
+
     # TODO: how can a Flask application find templates when its installed as an egg?
     t = Template("""
 <html>
